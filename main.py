@@ -1,12 +1,11 @@
 import sys
 
-clients = 'andres,jose,'
+clients = ['andres','jose']
 def create_client(client_name):
 	global clients
 
 	if client_name not in clients:
-		clients += client_name
-		_add_comma()
+		clients.append(client_name)
 	else:
 		print('CLient already in in the client\'s list')
 
