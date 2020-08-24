@@ -32,34 +32,44 @@ def list_client():
 		print(f"{idx} : {client['name']}, {client['company']}, {client['email']}, {client['position']}")
 
 
-def update_client(client_name, updated_client_name):
+def update_client(new_client_name, updated_client_name):
 	global clients
 
-	if client_name in clients:
-		index = clients.index(client_name)
-		clients[index] = updated_client_name
-	else:
-		print('Client is not in clients list')
+	response = search_client(updated_client_name)
+	print(response)
+
+	if response["exists"]:
+		response["client"].update({'name': new_client_name})
+	# for client in clients:
+	# 	if updated_client_name in client['name']:
+	# 		client.update({'name': new_client_name})
+	# 		break
 
 
 def delete_client(client_name):
 	global clients
-	
-	if client_name in clients:
-		clients.remove(client_name)
 
-	else:
-		print('Client is not in clients list')
+	response = search_client(client_name)
+
+	if response["exists"]:
+		clients.pop(response["idx"])
+		return True
+	return False
+	# for idx, client in enumerate(clients):
+	# 	# print(type(idx), client)
+	# 	if client_name == client['name'].lower():
+	# 		clients.pop(idx)
+	# 		return True
+	# return False 
 
 
 def search_client(client_name):
 	global clients
 
-	for client in clients:
-		if client != client_name:
-			continue
-		else:
-			return True
+	for idx, client in enumerate(clients):
+		if client['name'].lower() == client_name.lower():
+			return {"idx": idx, "exists": True, "client": client}
+	return {"idx": False, "exists": False, "client": None}
 
 
 def _print_welcome():
@@ -114,20 +124,28 @@ if __name__ == '__main__':
 		list_client()
 	elif command == 'L':
 		list_client()
+
 	elif command == 'D':
 		client_name = _get_client_name()
-		delete_client(client_name)
+		deleted = delete_client(client_name)
+
+		if deleted:
+			print("User deleted Successful")
+		else:
+			print("User not found")
+
 		list_client()
+
 	elif command == 'U':
-		client_name = _get_client_name()
-		updated_client_name = input('what is the updated client name: ')
-		update_client(client_name, updated_client_name)
+		updated_client_name = input('Search by name: ')
+		new_client_name = _get_client_name()
+		update_client(new_client_name, updated_client_name)
 		list_client()
 	elif command == 'S':
 		client_name = _get_client_name()
 		found = search_client(client_name)
 
-		if found:
+		if found["exists"]:
 			print('The client is in the client\'s list')
 		else:
 			print(f'The client: {client_name} is not in our client\'s list')
